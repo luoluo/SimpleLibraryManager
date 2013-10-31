@@ -7,14 +7,61 @@ struct Reader {
 };
 int
 init() {
-	FILE *pfile;
-	pfile = fopen("reader.txt", "wt+");
+	FILE *readerFile, *bookFile, *lendFile;
+	readerFile = fopen("readerFile.txt", "wt+");
+	bookFile = fopen("bookFile.txt", "wt+");
+	lendFile = fopen("lendFile.txt", "wt+");
 //	pfile.close();
+	close(readerFile);
+	close(bookFile);
+	close(lendFile);
+	return 0;
+}
+int
+displayBook() {
+	return 0;
+}
+int
+addBook() {
+	return 0;
+}
+int
+editBook() {
+	return 0;
+}
+int
+removeBook() {
+	return 0;
+}
+int
+searchBook() {
+	return 0;
+}
+int
+sortBook() {
+	return 0;
+}
+int
+goback() {
 	return 0;
 }
 int
 bookManage() {
-	printf("bm\n");
+	while (1) {
+		printf("bm\n1->dip\t2->add\t3->edit\t4->remove\t5.search\t6.sort\t0->return\n");
+		int x;
+		scanf("%d", &x);
+		switch(x) {
+			case 1: displayBook(); break;
+			case 2: addBook(); break;
+			case 3: editBook(); break;
+			case 4: removeBook(); break;
+			case 5: searchBook(); break;
+			case 6: sortBook(); break;
+			case 0: goback(); return 0;
+			default: ;
+		}
+	}
 	return 0;
 }
 int
@@ -35,13 +82,13 @@ logout() {
 int operation() {
 	while (1) {
 		int x;
-		printf("1->bm\t2->rm\t3->lm\t4->lt\n");
+		printf("1->bm\t2->rm\t3->lm\t0->lt\n");
 		scanf("%d", &x);
 		switch(x) {
 			case 1: bookManage(); break;
 			case 2: readerManage(); break;
 			case 3: lendManage(); break;
-			case 4: logout(); return 0;
+			case 0: logout(); return 0;
 			default: ;
 		}
 	}
