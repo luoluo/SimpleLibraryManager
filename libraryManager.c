@@ -108,8 +108,31 @@ readerManage() {
 	return 0;
 }
 int
+searchBorrow() {
+	return 0;
+}
+int
+borrow() {
+	return 0;
+}
+int
+revert() {
+	return 0;
+}
+int
 lendManage() {
-	printf("lm\n");
+	while (1) {
+		printf("lm\n1->search\t2->borrow\t3->revert\t0->return");
+		int x;
+		scanf("%d", &x);
+		switch(x) {
+			case 1: searchBorrow(); break;
+			case 2: borrow(); break;
+			case 3: revert(); break;
+			case 0: goback(); return 0; 
+			default: ;
+		}
+	}
 	return 0;
 }
 int
