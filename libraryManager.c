@@ -65,8 +65,46 @@ bookManage() {
 	return 0;
 }
 int
+displayReader() {
+	return 0;
+}
+int
+addReader() {
+	return 0;
+}
+int
+editReader() {
+	return 0;
+}
+int
+removeReader() {
+	return 0;	
+}
+int
+searchReader() {
+	return 0;
+}
+int
+sortReader() {
+	return 0;
+}
+int
 readerManage() {
-	printf("rm\n");
+	while (1) {
+		printf("rm\n1->dip\t2->add\t3->edit\t4->remove\t5.search\t6.sort\t0->return\n");
+		int x;
+		scanf("%d", &x);
+		switch(x) {
+			case 1: displayReader(); break;
+			case 2: addReader(); break;
+			case 3: editReader(); break;
+			case 4: removeReader(); break;
+			case 5: searchReader(); break;
+			case 6: sortReader(); break;
+			case 0: goback(); return 0;
+			default: ;
+		}
+	}
 	return 0;
 }
 int
