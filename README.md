@@ -9,6 +9,7 @@
 >>	--- search    
 >>	--- sort      
 >>	--- back      
+
 >--- ReaderManager   
 >>	--- new         
 >>	--- display     
@@ -18,10 +19,12 @@
 >>	--- search      
 >>	--- sort        
 >>	--- back        
+
 >--- LendManager     
 >>	--- display     
 >>	--- borrow      
 >>	--- retrun      
 >>	--- back        
+
 >--- LogOut          
 >>	--- logut       
