@@ -189,27 +189,116 @@ bookManage() {
 	return 0;
 }
 int
+showReaderInfo(struct Reader reader) {
+	printf("%s\t%s\n", reader.readerId, reader.name);
+	return 0;
+}
+int
 displayReader() {
+//	char readerId[5];
+//	char name[9];
+//	char sex[3];
+//	char stuId[7];
+//	struct LendInfo lendInfo[20];
+	int i;
+	for (i = 0; i < totalReader; i++) {
+		showReaderInfo(readers[i]);
+	}
+	return 0;
+}
+int
+getReaderInfo() {
+	scanf("%s%s", readers[totalReader].readerId, readers[totalReader].name);
 	return 0;
 }
 int
 addReader() {
+	getReaderInfo();
+	totalReader++;
 	return 0;
 }
 int
+writeReaderInfo(struct Reader reader) {
+	fprintf(readerFile, "%s\t%s\n", reader.readerId, reader.name);
+	return 0;
+}
+int
+searchReaderById(char readerIdx[]) {
+	int i;
+	for (i = 0; i < totalReader; i++) {
+		if (strcmp(readers[i].readerId, readerIdx) == 0) {
+			return i;
+		}
+	}
+	return -1;
+
+}
+int
 editReader() {
+	char changeId[5], changeArea[10];
+	scanf("%s%s", changeId, changeArea);
+	int i = searchReaderById(changeId);
+	if (i != -1) {
+		if (strcmp(changeArea, "readerId") == 0) {
+			char changeTo[5];
+			scanf("%s", changeTo);
+			strcpy(readers[i].readerId, changeTo);
+		}	
+	} else {
+		printf("no such reader\n");
+	}
+	
 	return 0;
 }
 int
 removeReader() {
+	char changeId[5];
+	scanf("%s", changeId);
+	int i = searchReaderById(changeId);
+	if (i != -1) {
+		int j;
+		for (j = i+1; j < totalReader; j++) {
+			readerInfoCopy(j-1, j);
+		}
+		totalReader--;
+	} else {
+		printf("no such reader\n");
+	}
+	
 	return 0;	
 }
+
 int
 searchReader() {
+	char readerIdx[5];
+	scanf("%s", readerIdx); 
+	int i = searchReaderById(readerIdx);
+	if (i != -1) {
+		showReaderInfo(readers[i]);
+	} else {
+		printf("no such reader\n");
+	}
+	return 0;
+}
+
+int
+readerInfoCopy(i, j) {
+	strcpy(readers[i].readerId, readers[j].readerId);
+	strcpy(readers[i].name, readers[j].name);
 	return 0;
 }
 int
 sortReader() {
+	int i, j;
+	for (i = 0; i < totalReader; i++) {
+		for (j = i+1; j < totalReader; j++) {
+			if (strcmp(readers[j].readerId, readers[j-1].readerId) < 0) {
+				readerInfoCopy(READERNUM-1, j-1);
+				readerInfoCopy(j-1, j);
+				readerInfoCopy(j, READERNUM-1);
+			}
+		}
+	}
 	return 0;
 }
 int
@@ -268,6 +357,9 @@ logout() {
 	lendFile = fopen("lendFile.txt", "w");
 	for (i = 0; i < totalBook; i++) {
 		writeBookInfo(books[i]);
+	}	
+	for (i = 0; i < totalReader; i++) {
+		writeReaderInfo(readers[i]);
 	}	
 	fclose(readerFile);
 	fclose(bookFile);
