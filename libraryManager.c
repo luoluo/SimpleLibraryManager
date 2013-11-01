@@ -16,6 +16,7 @@ struct Book {
 
 struct LendInfo {
 	char bookId[5];
+	char readerId[5];
 	char borrowDate[11];
 	char revertDate[11];
 };
@@ -44,7 +45,7 @@ init() {
 		totalBook++;	
 	}
 	lendFile = fopen("lendFile.txt", "a+");
-	while (fscanf(lendFile, "%s\t%s", lendInfos[totalLend].bookId, lendInfos[totalLend].borrowDate) != EOF) {
+	while (fscanf(lendFile, "%s\t%s", lendInfos[totalLend].bookId, lendInfos[totalLend].readerId) != EOF) {
 		totalLend++;	
 	}
 	fclose(readerFile);
@@ -321,27 +322,88 @@ readerManage() {
 	return 0;
 }
 int
-searchBorrow() {
+searchBorrowByIds(char bookIdx[], char readerIdx[]) {
+	int i;
+	for (i = 0; i < totalLend; i++) {
+		if (strcmp(lendInfos[i].bookId, bookIdx) == 0 
+				&& strcmp(lendInfos[i].readerId, readerIdx) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+int
+showBorrowInfo(struct LendInfo lendInfo) {
+	printf("%s\t%s\n", lendInfo.bookId, lendInfo.readerId);
 	return 0;
+}
+int
+searchBorrow() {
+	char bookIdx[5], readerIdx[5];
+	scanf("%s%s", bookIdx, readerIdx);
+	int i = searchBorrowByIds(bookIdx, readerIdx);	
+	if (i != -1) {
+		showBorrowInfo(lendInfos[i]);
+	} else {
+		printf("You didn't borrowed that..\n");
+	}
+	return 0;
+}
+int
+getBorrowInfo() {
+	scanf("%s%s", lendInfos[totalLend].bookId, lendInfos[totalLend].readerId);
 }
 int
 borrow() {
+	getBorrowInfo();	
+	totalLend++;
 	return 0;
 }
 int
+lendInfoCopy(i, j) {
+	strcpy(lendInfos[i].bookId, lendInfos[j].bookId);
+	strcpy(lendInfos[i].readerId, lendInfos[j].readerId);
+}
+int
 revert() {
+	char bookIdx[5], readerIdx[5];
+	scanf("%s%s", bookIdx, readerIdx);
+	int i = searchBorrowByIds(bookIdx, readerIdx);	
+	if (i != -1) {
+		int j;
+		for (j = i+1; j < totalLend; j++) {
+			lendInfoCopy(j-1, j);	
+		}	
+		totalLend--;
+	} else {
+		printf("no borrow, don't need to revert\n");
+	}
+	return 0;
+}
+int
+writeLendInfo(struct LendInfo lendInfo) {
+	fprintf(lendFile, "%s\t%s\n", lendInfo.bookId, lendInfo.readerId);
+	return 0;
+}
+int
+showAll() {
+	int i;
+	for (i = 0; i < totalLend; i++) {
+		showBorrowInfo(lendInfos[i]);
+	}
 	return 0;
 }
 int
 lendManage() {
 	while (1) {
-		printf("lm\n1->search\t2->borrow\t3->revert\t0->return");
+		printf("lm\n1->showAll\t2->search\t3->borrow\t4->revert\t0->return\n");
 		int x;
 		scanf("%d", &x);
 		switch(x) {
-			case 1: searchBorrow(); break;
-			case 2: borrow(); break;
-			case 3: revert(); break;
+			case 1: showAll(); break;
+			case 2: searchBorrow(); break;
+			case 3: borrow(); break;
+			case 4: revert(); break;
 			case 0: goback(); return 0; 
 			default: ;
 		}
@@ -360,6 +422,9 @@ logout() {
 	}	
 	for (i = 0; i < totalReader; i++) {
 		writeReaderInfo(readers[i]);
+	}	
+	for (i = 0; i < totalLend; i++) {
+		writeLendInfo(lendInfos[i]);
 	}	
 	fclose(readerFile);
 	fclose(bookFile);
@@ -382,6 +447,7 @@ int operation() {
 	}
 
 }
+
 int
 main() {
 	init();
