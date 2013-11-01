@@ -1,48 +1,114 @@
 #include <stdio.h>
 struct Book {
-
+	char bookId[5];
+	char name[23];
+	char author[15];
+	char press[19];
+	char date[8];
+	double pirce; 
+	char sort[6];
+	char readerId[5];
 };
-struct Reader {
 
+struct LendInfo {
+	char bookId[5];
+	char borrowDate[11];
+	char revertDate[11];
+};
+
+struct Reader {
+	char readerId[5];
+	char name[9];
+	char sex[3];
+	char stuId[7];
+	struct LendInfo lendInfo[20];
 };
 int
 init() {
 	FILE *readerFile, *bookFile, *lendFile;
-	readerFile = fopen("readerFile.txt", "wt+");
-	bookFile = fopen("bookFile.txt", "wt+");
-	lendFile = fopen("lendFile.txt", "wt+");
+	readerFile = fopen("readerFile.txt", "a+");
+	bookFile = fopen("bookFile.txt", "a+");
+	lendFile = fopen("lendFile.txt", "a+");
 //	pfile.close();
-	close(readerFile);
-	close(bookFile);
-	close(lendFile);
+	fclose(readerFile);
+	fclose(bookFile);
+	fclose(lendFile);
 	return 0;
 }
 int
 displayBook() {
+//	char bookId[5];
+//	char name[23];
+//	char author[15];
+//	char press[19];
+//	char date[8];
+//	double pirce; 
+//	char sort[6];
+//	char readerId[5];
+	FILE *bookFile;
+	bookFile = fopen("bookFile.txt", "r");
+	struct Book book;
+	char info[100];
+	while (fscanf(bookFile, "%s\t%s", book.bookId, book.name) != EOF) {
+		printf("%s\t%s\n", book.bookId, book.name);
+	}
+	fclose(bookFile);
 	return 0;
 }
 int
 addBook() {
+	FILE *bookFile;
+	bookFile = fopen("bookFile.txt", "a");
+	char info[100];
+	struct Book book;
+	scanf("%s%s", book.bookId, book.name);
+	fprintf(bookFile, "%s\t%s\n", book.bookId, book.name);
+	fclose(bookFile);
 	return 0;
 }
 int
 editBook() {
+	FILE *bookFile;
+	bookFile = fopen("bookFile.txt", "a");
+	char info[100];
+	scanf("%s", info);
+	fprintf(bookFile, "%s\n", info);
+	fclose(bookFile);
 	return 0;
 }
 int
 removeBook() {
+	FILE *bookFile;
+	bookFile = fopen("bookFile.txt", "a");
+	char info[100];
+	scanf("%s", info);
+	fprintf(bookFile, "%s\n", info);
+	fclose(bookFile);
 	return 0;
 }
 int
 searchBook() {
+	FILE *bookFile;
+	bookFile = fopen("bookFile.txt", "a");
+	char info[100];
+	scanf("%s", info);
+	fprintf(bookFile, "%s\n", info);
+	fclose(bookFile);
 	return 0;
 }
 int
 sortBook() {
+	FILE *bookFile;
+	bookFile = fopen("bookFile.txt", "a");
+	char info[100];
+	scanf("%s", info);
+	fprintf(bookFile, "%s\n", info);
+	fclose(bookFile);
 	return 0;
 }
 int
 goback() {
+	printf("returning...\n");
 	return 0;
 }
 int
