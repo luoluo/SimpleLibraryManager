@@ -1,4 +1,8 @@
 #include <stdio.h>
+#include <string.h>
+#define BOOKNUM 10000
+#define READERNUM 1000
+#define LENDNUM 1000
 struct Book {
 	char bookId[5];
 	char name[23];
@@ -23,16 +27,38 @@ struct Reader {
 	char stuId[7];
 	struct LendInfo lendInfo[20];
 };
+
+struct Book books[BOOKNUM];
+struct Reader readers[READERNUM];
+struct LendInfo lendInfos[LENDNUM];
+int totalReader, totalBook, totalLend;
+FILE *readerFile, *bookFile, *lendFile;
 int
 init() {
-	FILE *readerFile, *bookFile, *lendFile;
 	readerFile = fopen("readerFile.txt", "a+");
+	while (fscanf(readerFile, "%s\t%s", readers[totalReader].readerId, readers[totalReader].name) != EOF) {
+		totalReader++;	
+	}
 	bookFile = fopen("bookFile.txt", "a+");
+	while (fscanf(bookFile, "%s\t%s", books[totalBook].bookId, books[totalBook].name) != EOF) {
+		totalBook++;	
+	}
 	lendFile = fopen("lendFile.txt", "a+");
-//	pfile.close();
+	while (fscanf(lendFile, "%s\t%s", lendInfos[totalLend].bookId, lendInfos[totalLend].borrowDate) != EOF) {
+		totalLend++;	
+	}
 	fclose(readerFile);
 	fclose(bookFile);
 	fclose(lendFile);
+	return 0;
+}
+int
+showBookInfo(struct Book book) {
+	printf("%s\t%s\n", book.bookId, book.name);
+	return 0;
+}
+int writeBookInfo(struct Book book) {
+	fprintf(bookFile, "%s\t%s\n", book.bookId, book.name);
 	return 0;
 }
 int
@@ -45,65 +71,97 @@ displayBook() {
 //	double pirce; 
 //	char sort[6];
 //	char readerId[5];
-	FILE *bookFile;
-	bookFile = fopen("bookFile.txt", "r");
-	struct Book book;
-	char info[100];
-	while (fscanf(bookFile, "%s\t%s", book.bookId, book.name) != EOF) {
-		printf("%s\t%s\n", book.bookId, book.name);
+	int i;
+	for (i = 0; i < totalBook; i++) {
+		showBookInfo(books[i]);
 	}
-	fclose(bookFile);
+	return 0;
+}
+int
+getBookInfo() {
+	scanf("%s%s", books[totalBook].bookId, books[totalBook].name);
 	return 0;
 }
 int
 addBook() {
-	FILE *bookFile;
-	bookFile = fopen("bookFile.txt", "a");
-	char info[100];
-	struct Book book;
-	scanf("%s%s", book.bookId, book.name);
-	fprintf(bookFile, "%s\t%s\n", book.bookId, book.name);
-	fclose(bookFile);
+	getBookInfo();
+	totalBook++;
 	return 0;
 }
 int
 editBook() {
-	FILE *bookFile;
-	bookFile = fopen("bookFile.txt", "a");
-	char info[100];
-	scanf("%s", info);
-	fprintf(bookFile, "%s\n", info);
-	fclose(bookFile);
+	char changeId[5], changeArea[10];
+	scanf("%s%s", changeId, changeArea);
+	int i = searchBookById(changeId);
+	if (i != -1) {
+		if (strcmp(changeArea, "bookId") == 0) {
+			char changeTo[5];
+			scanf("%s", changeTo);
+			strcpy(books[i].bookId, changeTo);
+		}	
+	} else {
+		printf("no such book\n");
+	}
+	
 	return 0;
+}
+int
+bookInfoCopy(int i, int j) {
+	strcpy(books[i].bookId, books[j].bookId);
+	strcpy(books[i].name, books[j].name);
 }
 int
 removeBook() {
-	FILE *bookFile;
-	bookFile = fopen("bookFile.txt", "a");
-	char info[100];
-	scanf("%s", info);
-	fprintf(bookFile, "%s\n", info);
-	fclose(bookFile);
+	char changeId[5];
+	scanf("%s", changeId);
+	int i = searchBookById(changeId);
+	if (i != -1) {
+		int j;
+		for (j = i+1; j < totalBook; j++) {
+			bookInfoCopy(j-1, j);
+		}
+		totalBook--;
+	} else {
+		printf("no such book\n");
+	}
+	
 	return 0;
+}
+
+int
+searchBookById(char bookIdx[]) {
+	int i;
+	for (i = 0; i < totalBook; i++) {
+		if (strcmp(books[i].bookId, bookIdx) == 0) {
+			return i;
+		}
+	}
+	return -1;
 }
 int
 searchBook() {
-	FILE *bookFile;
-	bookFile = fopen("bookFile.txt", "a");
-	char info[100];
-	scanf("%s", info);
-	fprintf(bookFile, "%s\n", info);
-	fclose(bookFile);
+	char bookIdx[5];
+	scanf("%s", bookIdx); 
+	int i = searchBookById(bookIdx);
+	if (i != -1) {
+		showBookInfo(books[i]);
+	} else {
+		printf("no such book\n");
+	}
 	return 0;
 }
 int
 sortBook() {
-	FILE *bookFile;
-	bookFile = fopen("bookFile.txt", "a");
-	char info[100];
-	scanf("%s", info);
-	fprintf(bookFile, "%s\n", info);
-	fclose(bookFile);
+	int i, j;
+	for (i = 0; i < totalBook; i++) {
+		for (j = i+1; j < totalBook; j++) {
+			if (strcmp(books[j].bookId, books[j-1].bookId) < 0) {
+				bookInfoCopy(BOOKNUM-1, j-1);
+				bookInfoCopy(j-1, j);
+				bookInfoCopy(j, BOOKNUM-1);
+			}
+		}
+	}
 	return 0;
 }
 int
@@ -203,6 +261,17 @@ lendManage() {
 }
 int
 logout() {
+	//write back
+	int i;
+	readerFile = fopen("readerFile.txt", "w");
+	bookFile = fopen("bookFile.txt", "w");
+	lendFile = fopen("lendFile.txt", "w");
+	for (i = 0; i < totalBook; i++) {
+		writeBookInfo(books[i]);
+	}	
+	fclose(readerFile);
+	fclose(bookFile);
+	fclose(lendFile);
 	printf("lt\n");
 	return 0;
 }
