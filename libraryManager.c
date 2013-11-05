@@ -9,7 +9,7 @@ struct Book {
 	char author[15];
 	char press[19];
 	char date[8];
-	double pirce; 
+	double price; 
 	char sort[6];
 	char readerId[5];
 };
@@ -36,16 +36,35 @@ int totalReader, totalBook, totalLend;
 FILE *readerFile, *bookFile, *lendFile;
 int
 init() {
-	readerFile = fopen("readerFile.txt", "a+");
-	while (fscanf(readerFile, "%s\t%s", readers[totalReader].readerId, readers[totalReader].name) != EOF) {
-		totalReader++;	
-	}
 	bookFile = fopen("bookFile.txt", "a+");
-	while (fscanf(bookFile, "%s\t%s", books[totalBook].bookId, books[totalBook].name) != EOF) {
+	while (fscanf(bookFile, "%s\t%s\t%s\t%s\t%s\t%lf\t%s\t%s", 
+			books[totalBook].bookId, 
+			books[totalBook].name,
+			books[totalBook].author,
+			books[totalBook].press,
+			books[totalBook].date,
+			&books[totalBook].price,
+			books[totalBook].sort,
+			books[totalBook].readerId
+		) != EOF) {
 		totalBook++;	
 	}
+	readerFile = fopen("readerFile.txt", "a+");
+	while (fscanf(readerFile, "%s\t%s\t%s\t%s",
+			 readers[totalReader].readerId,
+			 readers[totalReader].name, 
+			 readers[totalReader].sex,
+			 readers[totalReader].stuId
+		) != EOF) {
+		totalReader++;	
+	}
 	lendFile = fopen("lendFile.txt", "a+");
-	while (fscanf(lendFile, "%s\t%s", lendInfos[totalLend].bookId, lendInfos[totalLend].readerId) != EOF) {
+	while (fscanf(lendFile, "%s\t%s\t%s\t%s",
+			 lendInfos[totalLend].bookId,
+			 lendInfos[totalLend].readerId,
+			 lendInfos[totalLend].borrowDate,
+			 lendInfos[totalLend].revertDate
+		 ) != EOF) {
 		totalLend++;	
 	}
 	fclose(readerFile);
@@ -55,11 +74,29 @@ init() {
 }
 int
 showBookInfo(struct Book book) {
-	printf("%s\t%s\n", book.bookId, book.name);
+	printf("%s\t%s\t%s\t%s\t%s\t%lf\t%s\t%s\n", 
+			book.bookId, 
+			book.name,
+			book.author,
+			book.press,
+			book.date,
+			book.price,
+			book.sort,
+			book.readerId
+	);
 	return 0;
 }
 int writeBookInfo(struct Book book) {
-	fprintf(bookFile, "%s\t%s\n", book.bookId, book.name);
+	fprintf(bookFile, "%s\t%s\t%s\t%s\t%s\t%lf\t%s\t%s\n", 
+			book.bookId, 
+			book.name,
+			book.author,
+			book.press,
+			book.date,
+			book.price,
+			book.sort,
+			book.readerId
+	);
 	return 0;
 }
 int
@@ -69,10 +106,11 @@ displayBook() {
 //	char author[15];
 //	char press[19];
 //	char date[8];
-//	double pirce; 
+//	double price; 
 //	char sort[6];
 //	char readerId[5];
 	int i;
+	printf("bookId\tname\tauthor\tpress\tdate\tprice\tsort\treaderId\n");
 	for (i = 0; i < totalBook; i++) {
 		showBookInfo(books[i]);
 	}
@@ -80,7 +118,17 @@ displayBook() {
 }
 int
 getBookInfo() {
-	scanf("%s%s", books[totalBook].bookId, books[totalBook].name);
+	printf("bookId\tname\tauthor\tpress\tdate\tprice\tsort\treaderId\n");
+	scanf("%s\t%s\t%s\t%s\t%s\t%lf\t%s\t%s", 
+			books[totalBook].bookId, 
+			books[totalBook].name,
+			books[totalBook].author,
+			books[totalBook].press,
+			books[totalBook].date,
+			&books[totalBook].price,
+			books[totalBook].sort,
+			books[totalBook].readerId
+	);
 	return 0;
 }
 int
@@ -88,6 +136,16 @@ addBook() {
 	getBookInfo();
 	totalBook++;
 	return 0;
+}
+int
+searchBookById(char bookIdx[]) {
+	int i;
+	for (i = 0; i < totalBook; i++) {
+		if (strcmp(books[i].bookId, bookIdx) == 0) {
+			return i;
+		}
+	}
+	return -1;
 }
 int
 editBook() {
@@ -108,8 +166,23 @@ editBook() {
 }
 int
 bookInfoCopy(int i, int j) {
+//	char bookId[5];
+//	char name[23];
+//	char author[15];
+//	char press[19];
+//	char date[8];
+//	double price; 
+//	char sort[6];
+//	char readerId[5];
 	strcpy(books[i].bookId, books[j].bookId);
 	strcpy(books[i].name, books[j].name);
+	strcpy(books[i].author, books[j].author);
+	strcpy(books[i].press, books[j].press);
+	strcpy(books[i].date, books[j].date);
+	books[i].price = books[j].price;
+	strcpy(books[i].sort, books[j].sort);
+	strcpy(books[i].readerId, books[j].readerId);
+	return 0;
 }
 int
 removeBook() {
@@ -129,16 +202,6 @@ removeBook() {
 	return 0;
 }
 
-int
-searchBookById(char bookIdx[]) {
-	int i;
-	for (i = 0; i < totalBook; i++) {
-		if (strcmp(books[i].bookId, bookIdx) == 0) {
-			return i;
-		}
-	}
-	return -1;
-}
 int
 searchBook() {
 	char bookIdx[5];
@@ -191,7 +254,12 @@ bookManage() {
 }
 int
 showReaderInfo(struct Reader reader) {
-	printf("%s\t%s\n", reader.readerId, reader.name);
+	printf("%s\t%s\t%s\t%s\n", 
+			 reader.readerId,
+			 reader.name, 
+			 reader.sex,
+			 reader.stuId
+	);
 	return 0;
 }
 int
@@ -201,6 +269,7 @@ displayReader() {
 //	char sex[3];
 //	char stuId[7];
 //	struct LendInfo lendInfo[20];
+	printf("readerId\tname\tsex\tstuId\n");
 	int i;
 	for (i = 0; i < totalReader; i++) {
 		showReaderInfo(readers[i]);
@@ -209,7 +278,13 @@ displayReader() {
 }
 int
 getReaderInfo() {
-	scanf("%s%s", readers[totalReader].readerId, readers[totalReader].name);
+	printf("readerId\tname\tsex\tstuId\n");
+	scanf("%s\t%s\t%s\t%s", 
+			 readers[totalReader].readerId,
+			 readers[totalReader].name, 
+			 readers[totalReader].sex,
+			 readers[totalReader].stuId
+	);
 	return 0;
 }
 int
@@ -220,7 +295,12 @@ addReader() {
 }
 int
 writeReaderInfo(struct Reader reader) {
-	fprintf(readerFile, "%s\t%s\n", reader.readerId, reader.name);
+	fprintf(readerFile, "%s\t%s\t%s\t%s\n", 
+			 reader.readerId,
+			 reader.name, 
+			 reader.sex,
+			 reader.stuId
+	);
 	return 0;
 }
 int
@@ -251,6 +331,16 @@ editReader() {
 	
 	return 0;
 }
+
+int
+readerInfoCopy(int i,int j) {
+	strcpy(readers[i].readerId, readers[j].readerId);
+	strcpy(readers[i].name, readers[j].name);
+	strcpy(readers[i].sex, readers[j].sex);
+	strcpy(readers[i].stuId, readers[j].stuId);
+	return 0;
+}
+
 int
 removeReader() {
 	char changeId[5];
@@ -282,12 +372,6 @@ searchReader() {
 	return 0;
 }
 
-int
-readerInfoCopy(i, j) {
-	strcpy(readers[i].readerId, readers[j].readerId);
-	strcpy(readers[i].name, readers[j].name);
-	return 0;
-}
 int
 sortReader() {
 	int i, j;
@@ -334,7 +418,12 @@ searchBorrowByIds(char bookIdx[], char readerIdx[]) {
 }
 int
 showBorrowInfo(struct LendInfo lendInfo) {
-	printf("%s\t%s\n", lendInfo.bookId, lendInfo.readerId);
+	printf("%s\t%s\t%s\t%s\n",
+		 lendInfo.bookId,
+		 lendInfo.readerId,
+		 lendInfo.borrowDate,
+		 lendInfo.revertDate
+	);
 	return 0;
 }
 int
@@ -351,17 +440,25 @@ searchBorrow() {
 }
 int
 getBorrowInfo() {
-	scanf("%s%s", lendInfos[totalLend].bookId, lendInfos[totalLend].readerId);
+	scanf("%s\t%s\t%s\t%s",
+		 lendInfos[totalLend].bookId,
+		 lendInfos[totalLend].readerId,
+		 lendInfos[totalLend].borrowDate,
+		 lendInfos[totalLend].revertDate
+	);
 }
 int
 borrow() {
+	printf("bookId\treaderId\tborrowDate\trevertDate\n");
 	getBorrowInfo();	
 	totalLend++;
 	return 0;
 }
 int
-lendInfoCopy(i, j) {
+lendInfoCopy(int i,int j) {
 	strcpy(lendInfos[i].bookId, lendInfos[j].bookId);
+	strcpy(lendInfos[i].readerId, lendInfos[j].readerId);
+	strcpy(lendInfos[i].borrowDate, lendInfos[j].borrowDate);
 	strcpy(lendInfos[i].readerId, lendInfos[j].readerId);
 }
 int
@@ -382,12 +479,18 @@ revert() {
 }
 int
 writeLendInfo(struct LendInfo lendInfo) {
-	fprintf(lendFile, "%s\t%s\n", lendInfo.bookId, lendInfo.readerId);
+	fprintf(lendFile, "%s\t%s\t%s\t%s\n",
+		 lendInfo.bookId,
+		 lendInfo.readerId,
+		 lendInfo.borrowDate,
+		 lendInfo.revertDate
+	);
 	return 0;
 }
 int
 showAll() {
 	int i;
+	printf("bookId\treaderId\tborrowDate\trevertDate\n");
 	for (i = 0; i < totalLend; i++) {
 		showBorrowInfo(lendInfos[i]);
 	}
@@ -432,6 +535,7 @@ logout() {
 	printf("lt\n");
 	return 0;
 }
+
 int operation() {
 	while (1) {
 		int x;

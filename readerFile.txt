@@ -1,3 +1,1 @@
-1	raaa
-2	rccc
-3	rbbb
+231	3124	M	fas
