@@ -451,7 +451,12 @@ int
 borrow() {
 	printf("bookId\treaderId\tborrowDate\trevertDate\n");
 	getBorrowInfo();	
-	totalLend++;
+	if (searchBookById(lendInfos[totalLend].bookId) != -1 &&
+		searchReaderById(lendInfos[totalLend].readerId) != -1){
+		totalLend++;
+	} else {
+		printf("no such book or no such reader\n");
+	}
 	return 0;
 }
 int
